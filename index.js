@@ -33,6 +33,13 @@ app.get('/api/persons', (req, res) => {
 
 app.post('/api/persons', (request, response) => {
     const person = request.body;
+
+    if ((!person.name || !person.number) || persons.find(p => p.name === person.name)) {
+        return response.status(400).json({
+            error: 'name must be unique'
+        })
+    }
+
     person.id = Number(Date.now() + Math.random().toString().slice(2));
 
     persons = persons.concat(person);
