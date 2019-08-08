@@ -26,8 +26,19 @@ let persons = [
     },
 ];
 
+morgan.token('dataSent', (req) => {
+    return req.dataSent;
+});
+
+function fetchReqBody (req, res, next) {
+    req.dataSent = JSON.stringify(req.body);
+    next()
+}
+
 app.use(bodyParser.json());
-app.use(morgan('tiny'));
+
+app.use(fetchReqBody);
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :dataSent'));
 
 app.get('/api/persons', (req, res) => {
     res.json(persons)
