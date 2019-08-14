@@ -35,6 +35,8 @@ function fetchReqBody (req, res, next) {
     next()
 }
 
+app.use(express.static('build'));
+
 app.use(bodyParser.json());
 
 app.use(fetchReqBody);
