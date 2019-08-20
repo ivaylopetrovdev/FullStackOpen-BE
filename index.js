@@ -5,29 +5,6 @@ const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const Person = require('./models/person');
 
-// let persons = [
-//     {
-//         "name": "Arto Hellas",
-//         "number": "040-123456",
-//         "id": 1
-//     },
-//     {
-//         "name": "Ada Lovelace",
-//         "number": "39-44-5323523",
-//         "id": 2
-//     },
-//     {
-//         "name": "Dan Abramov",
-//         "number": "12-43-234345",
-//         "id": 3
-//     },
-//     {
-//         "name": "Mary Poppendieck",
-//         "number": "39-23-6423122",
-//         "id": 4
-//     },
-// ];
-
 morgan.token('dataSent', (req) => {
     return req.dataSent;
 });
@@ -51,19 +28,28 @@ app.get('/api/persons', (req, res) => {
 });
 
 app.post('/api/persons', (request, response) => {
-    const person = request.body;
+    const body = request.body;
 
-    if ((!person.name || !person.number) || persons.find(p => p.name === person.name)) {
+    if (!body.name) {
         return response.status(400).json({
-            error: 'name must be unique'
+            error: 'Name is required'
         })
     }
 
-    person.id = Number(Date.now() + Math.random().toString().slice(2));
+    if (!body.number) {
+        return response.status(400).json({
+            error: 'Number is required'
+        })
+    }
 
-    persons = persons.concat(person);
+    const person = new Person({
+        name: body.name,
+        number: body.number,
+    });
 
-    response.json(person)
+    person.save().then(savedPerson => {
+        response.json(savedPerson.toJSON())
+    });
 });
 
 app.get('/info', (req, res) => {
