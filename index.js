@@ -32,7 +32,7 @@ app.get('/api/persons', (req, res) => {
 });
 
 app.post('/api/persons', (request, response) => {
-    const body = request.body;
+    const {body} = request;
 
     if (!body.name) {
         return response.status(400).json({
@@ -57,7 +57,9 @@ app.post('/api/persons', (request, response) => {
 });
 
 app.get('/info', (req, res) => {
-    res.send(`<p>Phonebook has info for ${persons.length} people</p><p>${new Date()}</p>`)
+    Person.find({}).then(persons => {
+        res.send(`<p>Phonebook has info for ${persons.length} people</p><p>${new Date()}</p>`)
+    });
 });
 
 app.get('/api/persons/:id', (request, response, next) => {
@@ -78,11 +80,10 @@ app.delete('/api/persons/:id', (request, response, next) => {
             response.status(204).end()
         })
         .catch(error => next(error))
-
 });
 
 app.put('/api/persons/:id', (request, response, next) => {
-    const body = request.body;
+    const {body} = request;
 
     const person = {
         name: body.name,
